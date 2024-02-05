@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, Union
 
 class EyeTracker(BaseModel):
     address: str
@@ -10,4 +10,4 @@ class EyeTracker(BaseModel):
 class WSMessage(BaseModel):
     type: str
     status: str
-    value: Dict[str, str]
+    value: Dict[str, Union[str, int, float, bool, None, Dict, list]]

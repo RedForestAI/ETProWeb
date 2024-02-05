@@ -33,8 +33,8 @@ def test_ws_connection():
     et = EyeTracker(**ets[0])
     
     with client.websocket_connect("/ws/{" + et.serial_number + "}") as websocket:
-        for i in range(1):
+        for i in range(10):
             data = websocket.receive_json()
             logger.debug(data)
-            time.sleep(1)
+            # time.sleep(1)
             # assert data == {"msg": "Hello WebSocket"}
