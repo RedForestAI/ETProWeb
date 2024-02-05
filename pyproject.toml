@@ -18,6 +18,7 @@ classifiers = [
 dependencies = [
     "tobii-research",
     "fastapi",
+    "pydantic",
     "uvicorn[standard]",
     'winloop; sys_platform == "win32"',
     'uvloop; sys_platform != "win32"',
