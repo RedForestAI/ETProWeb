@@ -1,14 +1,20 @@
 from typing import List, Optional
 import logging
+import asyncio
+import os
+import threading
+import zmq
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import tobii_research as tr
 
 from .models import EyeTracker, WSMessage
+from .subscriber import Subscriber
 
 logger = logging.getLogger("tobii_pro_server")
 
 app = FastAPI()
+context = zmq.Context()
 
 @app.get("/")
 def root():
@@ -28,22 +34,6 @@ def find():
         ))
 
     return res
-
-def gaze_data_callback(ws, gaze_data):
-    # print(gaze_data)
-    # Print gaze points of left and right eye
-    logger.debug("Left eye: ({gaze_left_eye}) \t Right eye: ({gaze_right_eye})".format(
-        gaze_left_eye=gaze_data['left_gaze_point_on_display_area'],
-        gaze_right_eye=gaze_data['right_gaze_point_on_display_area']))
-
-# @app.websocket("/ws/{serial_number}")
-# async def websocket(websocket: WebSocket, serial_number: str):
-    
-#     logger.debug(f'CLIENT requests - {serial_number}')
-
-#     await websocket.accept()
-#     await websocket.send_json({"msg": "Hello WebSocket"})
-#     await websocket.close()
 
 @app.websocket("/ws/{serial_number}")
 async def websocket_endpoint(websocket: WebSocket, serial_number: str):
@@ -70,8 +60,31 @@ async def websocket_endpoint(websocket: WebSocket, serial_number: str):
         await websocket.close()
         return
     
+    def gaze_data_callback(gaze_data):
+        # pid = os.getpid()
+        # thread_name = threading.current_thread().name
+        # logger.debug(f"Gaze data callback PID: {pid}, Thread Name: {thread_name}")
+        # global websocket
+        # logger.debug(websocket)
+        # loop = asyncio.get_event_loop()
+        # logger.debug(loop)
+        # loop.run_until_complete(websocket.send_json(WSMessage(
+        #     type="GAZE",
+        #     status="UPDATE",
+        #     value={"gaze_data": gaze_data}
+        # ).model_dump_json()))
+        logger.debug(gaze_data)
+    
+    
+    # pid = os.getpid()
+    # thread_name = threading.current_thread().name
+    # logger.debug(f"Main PID: {pid}, Thread Name: {thread_name}")
+    
+    # Create a zmq subscriber context
+    
     # Subscribe to gaze data
-    # eye_tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, lambda x: gaze_data_callback(websocket, x), as_dictionary=True)
+    logger.debug(f"Subscribing to gaze data from {eye_tracker.device_name} ({eye_tracker.serial_number})")
+    eye_tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
 
     # Send an initial message to the WebSocket client
     await websocket.send_json(WSMessage(
@@ -92,5 +105,5 @@ async def websocket_endpoint(websocket: WebSocket, serial_number: str):
                 
     except WebSocketDisconnect:
         # Handle WebSocket disconnection here
-        # eye_tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, lambda x: gaze_data_callback(websocket, x))
-        pass
+        logger.debug(f"Client disconnected")
+        eye_tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)

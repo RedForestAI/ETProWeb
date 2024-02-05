@@ -19,6 +19,7 @@ dependencies = [
     "tobii-research",
     "fastapi",
     "pydantic",
+    "pyzmq",
     "uvicorn[standard]",
     'winloop; sys_platform == "win32"',
     'uvloop; sys_platform != "win32"',
