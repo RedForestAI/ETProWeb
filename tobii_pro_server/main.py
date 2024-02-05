@@ -87,9 +87,6 @@ async def websocket_endpoint(websocket: WebSocket, serial_number: str):
             if msg.lower() == "close":
                 await websocket.close()
                 break
-            else:
-                logger.debug(f'CLIENT says - {msg}')
-                await websocket.send_text(f"Your message was: {msg}")
                 
     except WebSocketDisconnect:
         # Handle WebSocket disconnection here
