@@ -5,12 +5,12 @@ import logging
 
 logger = logging.getLogger("tobii_pro_server")
 
-def gaze_data_callback(*args, **kwargs):
-    print(args)
+def gaze_data_callback(gaze_data):
+    # print(gaze_data)
     # Print gaze points of left and right eye
-    # print("Left eye: ({gaze_left_eye}) \t Right eye: ({gaze_right_eye})".format(
-    #     gaze_left_eye=gaze_data['left_gaze_point_on_display_area'],
-    #     gaze_right_eye=gaze_data['right_gaze_point_on_display_area']))
+    print("Left eye: ({gaze_left_eye}) \t Right eye: ({gaze_right_eye})".format(
+        gaze_left_eye=gaze_data['left_gaze_point_on_display_area'],
+        gaze_right_eye=gaze_data['right_gaze_point_on_display_area']))
 
 eye_trackers = tr.find_all_eyetrackers()
 print(eye_trackers)

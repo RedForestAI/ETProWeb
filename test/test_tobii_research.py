@@ -1,7 +1,9 @@
 import time
 import tobii_research as tr
-
 import logging
+from fastapi.testclient import TestClient
+
+from tobii_pro_server import app
 
 logger = logging.getLogger("tobii_pro_server")
 
@@ -34,3 +36,9 @@ def test_get_gaze_data():
 
     eye_tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
     logger.debug("Unsubscribed")
+    
+def test_ws_connection():
+    client = TestClient(app)
+    with client.websocket_connect("/ws") as websocket:
+        data = websocket.receive_json()
+        # assert data == {"msg": "Hello WebSocket"}

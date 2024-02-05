@@ -29,6 +29,7 @@ test = [
     'pytest',
     'pytest-asyncio',
     'pre-commit',
+    'httpx'
 ]
 
 [project.urls]

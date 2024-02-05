@@ -5,7 +5,7 @@ def run():
         "tobii_pro_server.main:app", 
         host="0.0.0.0", 
         port=8000, 
-        reload=False, 
+        reload=True, 
         log_level="debug", 
         workers=1, 
     )
