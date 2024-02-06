@@ -116,4 +116,27 @@ describe('TobiiClient Tests', () => {
     expect(responseMessage).toBeNull();
   });
 
+  test("TobiiClient, typical workflow", async () => {
+    const client = new TobiiClient();
+    const response = await client.getEyeTrackers();
+    if (response.length === 0) {
+      return;
+    }
+    const ws = await client.connectToEyeTracker(response[0].serial_number);
+    let responseMessage: WSMessage | null = null;
+
+    ws.on("message", (data) => {
+      responseMessage = JSON.parse(data.toString());
+      tobiiLogger.log(responseMessage)
+
+      // Close the client after it receives the response
+      ws.close();
+    });
+
+    // Perform assertions on the response
+    await waitForSocketState(ws, ws.CLOSED);
+    expect(responseMessage).not.toBeNull();
+    expect(responseMessage!.type).toBe("GAZE_DATA");
+  });
+
 });
