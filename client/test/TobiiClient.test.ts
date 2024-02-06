@@ -38,7 +38,7 @@ describe('TobiiClient Tests', () => {
     expect(response[0].model).toBe("Tobii Pro Spark");
   });
 
-  test("Server echoes the message it receives from client", async () => {
+  test("WS client receive GAZE_DATA updates from mock server", async () => {
     // Create test client
     const client = new WebSocket(`ws://localhost:${port}`);
     await waitForSocketState(client, client.OPEN);
@@ -60,24 +60,22 @@ describe('TobiiClient Tests', () => {
     expect(responseMessage!.type).toBe("GAZE_DATA");
   });
 
-  // test('WebSocket client should connect and send/receive messages', done => {
-  //   // expect.assertions(2); // Make sure two assertions are called
-  
-  //   const client = new TobiiClient();
-  //   const ws = client.createWebSocketConnection();
-  
-  //   ws.onopen = () => {
-  //     ws.send('Test Message');
-  //   };
-  
-  //   ws.onmessage = event => {
-  //     // expect(event.data).toBe('Test Message'); // Expect the echo message
-  //     done(); // Signal Jest that the test is complete
-  //   };
-  
-  //   ws.onerror = err => {
-  //     console.error('WebSocket encountered an error:', err);
-  //     done(err);
-  //   };
-  // });
+  test("TobiiClient should receive GAZE_DATA updates from mock server", async () => {
+    const client = new TobiiClient();
+    const ws = await client.createWebSocketConnection();
+    let responseMessage: WSMessage | null = null;
+
+    ws.on("message", (data) => {
+      responseMessage = JSON.parse(data.toString());
+      tobiiLogger.log(responseMessage)
+
+      // Close the client after it receives the response
+      ws.close();
+    });
+
+    // Perform assertions on the response
+    await waitForSocketState(ws, ws.CLOSED);
+    expect(responseMessage).not.toBeNull();
+    expect(responseMessage!.type).toBe("GAZE_DATA");
+  })
 });

@@ -1,5 +1,6 @@
 import WebSocket from 'isomorphic-ws'
 import jsLogger, { ILogger } from 'js-logger'
+import { waitForSocketState } from './utils'
 
 // Create logger
 jsLogger.useDefaults()
@@ -24,8 +25,9 @@ export default class TobiiClient {
     return data;
   }
 
-  createWebSocketConnection() {
-    const ws = new WebSocket(`ws://localhost:${this.port}`);
+  async createWebSocketConnection() {
+    const ws: WebSocket = new WebSocket(`ws://localhost:${this.port}`);
+    await waitForSocketState(ws, ws.OPEN);
   
     ws.onopen = function() {
       console.log('WebSocket connection established');
