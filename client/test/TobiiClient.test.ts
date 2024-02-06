@@ -19,4 +19,11 @@ describe('TobiiClient Tests', () => {
     const response = await client.getTest();
     expect(response.message).toBe('This is a test response');
   });
+
+  test("TobiiClient should receive eye trackers from mock server", async () => {
+    const client = new TobiiClient();
+    const response = await client.getEyeTrackers();
+    expect(response.length).toBe(2);
+    expect(response[0].model).toBe("Tobii Pro Spark");
+  });
 });
