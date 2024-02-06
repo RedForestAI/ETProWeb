@@ -23,7 +23,7 @@ def root():
 def ping():
     return {"message": "PING"}
 
-@app.get("api/find")
+@app.get("/api/find")
 def find():
     eye_trackers: List[tr.EyeTracker] = tr.find_all_eyetrackers()
 

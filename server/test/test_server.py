@@ -21,7 +21,8 @@ def test_ws_connection():
     client = TestClient(app)
         
     # Get the available eye-trackers first
-    response = client.get("api/find")
+    response = client.get("/api/find")
+    assert response.status_code != 404
     ets = response.json()
     logger.debug(ets)
     
