@@ -9,20 +9,24 @@ const tobiiLogger: ILogger = jsLogger.get('tobiiprosdk')
 
 export default class TobiiClient {
   port: number
+  host: string = 'http://localhost'
+  wsHost: string = 'ws://localhost'
   _activeWSConnections: { [id: string]: WebSocket} = {}
 
-  constructor(port: number = 3000) {
+  constructor(port: number = 3000, host: string = 'http://localhost', wsHost: string = 'ws://localhost') {
     this.port = port
+    this.host = host
+    this.wsHost = wsHost
   }
 
   async getTest() {
-    const response = await fetch(`http://localhost:${this.port}/api/test`);
+    const response = await fetch(`${this.host}:${this.port}/api/test`);
     const data = await response.json();
     return data;
   }
 
   async getEyeTrackers() {
-    const response = await fetch(`http://localhost:${this.port}/find`);
+    const response = await fetch(`${this.host}:${this.port}/find`);
     const data = await response.json();
     return data;
   }
@@ -51,7 +55,7 @@ export default class TobiiClient {
   }
 
   async _createWebSocketConnection(url_params: string) {
-    const ws: WebSocket = new WebSocket(`ws://localhost:${this.port}/${url_params}`);
+    const ws: WebSocket = new WebSocket(`${this.wsHost}:${this.port}/${url_params}`);
     await waitForSocketState(ws, ws.OPEN);
     return ws;
   }
