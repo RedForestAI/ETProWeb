@@ -51,6 +51,28 @@ def find():
 
     return res
 
+@app.websocket("/ws")
+async def websocket(websocket: WebSocket):
+    # Create a testing echoing WebSocket
+    await websocket.accept()
+
+    try:
+        while True:
+            msg = await websocket.receive_text()
+            if msg.lower() == "close":
+                await websocket.close()
+                break
+            else:
+                await websocket.send_json(WSMessage(
+                    type="ECHO",
+                    status="SUCCESS",
+                    value={"message": "ECHO: " + msg}
+                ).model_dump_json())
+                
+    except WebSocketDisconnect:
+        # Handle WebSocket disconnection here
+        logger.debug(f"Client disconnected")
+
 @app.websocket("/ws/{serial_number}")
 async def websocket_endpoint(websocket: WebSocket, serial_number: str):
     await websocket.accept()

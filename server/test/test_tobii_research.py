@@ -1,9 +1,12 @@
 import time
 import tobii_research as tr
 import logging
+import json
+from pydantic.tools import parse_obj_as
 from fastapi.testclient import TestClient
 
 from tobii_pro_server import app
+from tobii_pro_server.models import WSMessage
 
 logger = logging.getLogger("tobii_pro_server")
 
@@ -40,5 +43,6 @@ def test_get_gaze_data():
 def test_ws_connection():
     client = TestClient(app)
     with client.websocket_connect("/ws") as websocket:
-        data = websocket.receive_json()
-        # assert data == {"msg": "Hello WebSocket"}
+        websocket.send_text("HELLO")
+        data = parse_obj_as(WSMessage, json.loads(websocket.receive_json()))
+        assert data.type == "ECHO"
