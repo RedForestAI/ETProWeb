@@ -6,7 +6,6 @@ import TobiiClient from '../src/TobiiClient' // Import your client that makes HT
 import { waitForSocketState } from '../src/utils';
 import { WSMessage } from '../src/models';
 
-
 // Create logger
 jsLogger.useDefaults()
 const tobiiLogger: ILogger = jsLogger.get('tobiiprosdk')
@@ -62,7 +61,7 @@ describe('TobiiClient Tests', () => {
 
   test("TobiiClient should receive GAZE_DATA updates from mock server", async () => {
     const client = new TobiiClient();
-    const ws = await client.createWebSocketConnection();
+    const ws = await client._createWebSocketConnection();
     let responseMessage: WSMessage | null = null;
 
     ws.on("message", (data) => {
