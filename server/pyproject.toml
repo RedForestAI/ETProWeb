@@ -32,6 +32,9 @@ test = [
     'pre-commit',
     'httpx'
 ]
+bundle = [
+    'pyinstaller'
+]
 
 [project.urls]
 homepath = "https://github.com/reading-analytics-group"
