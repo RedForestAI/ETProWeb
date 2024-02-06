@@ -5,10 +5,11 @@ import { EyeTracker } from '../../src/models'
 
 // Create logger
 jsLogger.useDefaults()
-const cjsLogger: ILogger = jsLogger.get('tobiiprosdk')
+const tobiiLogger: ILogger = jsLogger.get('tobiiprosdk')
 
 export function startServer(port = 3000) {
   const app = express();
+  const expressWs = require("express-ws")(app);
   
   app.get("/api/test", (req, res) => {
     res.json({ message: "This is a test response" });
@@ -32,9 +33,15 @@ export function startServer(port = 3000) {
     res.json(eyetrackers);
   });
 
+  app.ws("/", function (ws, req) {
+    ws.on("message", function (message) {
+      ws.send(message);
+    });
+  });
+
   return new Promise(resolve => {
     const server = app.listen(port, () => {
-      cjsLogger.log(`Mock server listening on port ${port}`);
+      tobiiLogger.log(`Mock server listening on port ${port}`);
       resolve(server);
     });
   });
@@ -43,7 +50,7 @@ export function startServer(port = 3000) {
 export function stopServer(server) {
   return new Promise<void>(resolve => {
     server.close(() => {
-      cjsLogger.log('Mock server stopped');
+      tobiiLogger.log('Mock server stopped');
       resolve();
     });
   });
