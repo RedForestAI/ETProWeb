@@ -10,7 +10,7 @@ import { WSMessage } from '../src/models';
 jsLogger.useDefaults()
 const tobiiLogger: ILogger = jsLogger.get('tobiiprosdk')
 
-const port = 3000;
+const port = 9999;
 
 describe('TobiiClient Tests', () => {
   let server;

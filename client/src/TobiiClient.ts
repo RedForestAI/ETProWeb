@@ -13,7 +13,7 @@ export default class TobiiClient {
   wsHost: string = 'ws://localhost'
   _activeWSConnections: { [id: string]: WebSocket} = {}
 
-  constructor(port: number = 3000, host: string = 'http://localhost', wsHost: string = 'ws://localhost') {
+  constructor(port: number = 9999, host: string = 'http://localhost', wsHost: string = 'ws://localhost') {
     this.port = port
     this.host = host
     this.wsHost = wsHost

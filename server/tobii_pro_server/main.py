@@ -6,14 +6,27 @@ import threading
 import zmq
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 import tobii_research as tr
 
 from .models import EyeTracker, WSMessage
 
 logger = logging.getLogger("tobii_pro_server")
 
+origins = [
+    "http://localhost",
+    "http://localhost:9999",
+    "http://localhost:5173"
+]
+
 app = FastAPI()
-context = zmq.Context()
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=origins, 
+    allow_credentials=True, 
+    allow_methods=["*"], 
+    allow_headers=["*"]
+)
 
 @app.get("/")
 def root():
