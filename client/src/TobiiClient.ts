@@ -55,7 +55,7 @@ export default class TobiiClient {
   }
 
   async _createWebSocketConnection(url_params: string) {
-    const ws: WebSocket = new WebSocket(`${this.wsHost}:${this.port}/${url_params}`);
+    const ws: WebSocket = new WebSocket(`${this.wsHost}:${this.port}/ws/${url_params}`);
     await waitForSocketState(ws, ws.OPEN);
     return ws;
   }

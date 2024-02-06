@@ -14,9 +14,7 @@ from .models import EyeTracker, WSMessage
 logger = logging.getLogger("tobii_pro_server")
 
 origins = [
-    "http://localhost",
-    "http://localhost:9999",
-    "http://localhost:5173"
+    "*"
 ]
 
 app = FastAPI()

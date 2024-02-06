@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  var ws = new WebSocket("ws://localhost:9999/ws");
+  ws.onopen = function() {
+      console.log("Connected");
+  };
+  ws.onmessage = function(evt) {
+      console.log("Message: " + evt.data);
+  };
+  ws.onerror = function(evt) {
+    //   console.log("Error: " + evt);
+    console.log(evt)
+  };
+</script>
+</body>
+</html>

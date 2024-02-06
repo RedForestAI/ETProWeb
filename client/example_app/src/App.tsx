@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { TobiiClient } from "tobiiprosdk-js"
+import { waitForSocketState } from './utils'
 import './App.css'
 
 export type EyeTracker = {
@@ -40,10 +41,26 @@ function App() {
 
     const ws = await client.connectToEyeTracker(ets[0].serial_number);
     setETWs(ws)
+    // const ws: WebSocket = new WebSocket("ws://localhost:9999/ws")
+    // await waitForSocketState(ws, ws.OPEN)
+    ws.send("Hello, world!")
 
-    ws.on("message", (data: any) => {
-      console.log(data)
-    });
+    // Correct way to set event listeners on WebSocket
+    ws.onmessage = (event: any) => {
+      console.log(event.data);
+    };
+
+    ws.onerror = (event: any) => {
+        console.error("WebSocket error:", event);
+    };
+
+    ws.onopen = () => {
+        console.log("WebSocket connection established");
+    };
+
+    ws.onclose = () => {
+        console.log("WebSocket connection closed");
+    };
 
     setRunning(true)
   }
