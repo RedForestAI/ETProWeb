@@ -1,7 +1,7 @@
 // MockServer.js
 const express = require('express');
 import jsLogger, { ILogger } from 'js-logger'
-import { EyeTracker } from '../../src/models'
+import { EyeTracker, WSMessage } from '../../src/models'
 
 // Create logger
 jsLogger.useDefaults()
@@ -34,8 +34,18 @@ export function startServer(port = 3000) {
   });
 
   app.ws("/", function (ws, req) {
-    ws.on("message", function (message) {
-      ws.send(message);
+    // Keep sending data until the connection is closed, not dependent on client
+    const interval = setInterval(() => {
+      const wsMessage: WSMessage = {
+        type: "GAZE_DATA",
+        status: "UPDATE",
+        value: {x: 0, y: 0}
+      };
+      ws.send(JSON.stringify(wsMessage));
+    }, 10);
+
+    ws.on("close", () => {
+      clearInterval(interval);
     });
   });
 

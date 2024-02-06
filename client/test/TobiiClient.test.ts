@@ -1,8 +1,15 @@
 // TobiiClient.test.js
 import WebSocket from "ws";
+import jsLogger, { ILogger } from 'js-logger'
 const { startServer, stopServer } = require('./mocks/MockServer');
 import TobiiClient from '../src/TobiiClient' // Import your client that makes HTTP requests
 import { waitForSocketState } from '../src/utils';
+import { WSMessage } from '../src/models';
+
+
+// Create logger
+jsLogger.useDefaults()
+const tobiiLogger: ILogger = jsLogger.get('tobiiprosdk')
 
 const port = 3000;
 
@@ -36,22 +43,21 @@ describe('TobiiClient Tests', () => {
     const client = new WebSocket(`ws://localhost:${port}`);
     await waitForSocketState(client, client.OPEN);
 
-    const testMessage = "This is a test message";
-    let responseMessage;
+    // const testMessage = "This is a test message";
+    let responseMessage: WSMessage | null = null;
 
     client.on("message", (data) => {
-      responseMessage = data.toString();
+      responseMessage = JSON.parse(data.toString());
+      tobiiLogger.log(responseMessage)
 
       // Close the client after it receives the response
       client.close();
     });
 
-    // Send client message
-    client.send(testMessage);
-
     // Perform assertions on the response
     await waitForSocketState(client, client.CLOSED);
-    expect(responseMessage).toBe(testMessage);
+    expect(responseMessage).not.toBeNull();
+    expect(responseMessage!.type).toBe("GAZE_DATA");
   });
 
   // test('WebSocket client should connect and send/receive messages', done => {
