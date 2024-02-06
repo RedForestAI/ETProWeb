@@ -18,15 +18,15 @@ export default class TobiiClient {
     this.host = host
     this.wsHost = wsHost
   }
-
-  async getTest() {
-    const response = await fetch(`${this.host}:${this.port}/api/test`);
-    const data = await response.json();
-    return data;
+  
+  async ping() {
+    const response = await fetch(`${this.host}:${this.port}/api/ping`)
+    const data = await response.json()
+    return data
   }
 
   async getEyeTrackers() {
-    const response = await fetch(`${this.host}:${this.port}/find`);
+    const response = await fetch(`${this.host}:${this.port}/api/find`);
     const data = await response.json();
     return data;
   }

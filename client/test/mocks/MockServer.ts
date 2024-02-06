@@ -26,11 +26,11 @@ export function startServer(port = 3000) {
     }
   ]
   
-  app.get("/api/test", (req, res) => {
+  app.get("/api/ping", (req, res) => {
     res.json({ message: "This is a test response" });
   });
 
-  app.get('/find', (req, res) => {
+  app.get('/api/find', (req, res) => {
     res.json(eyetrackers);
   });
 

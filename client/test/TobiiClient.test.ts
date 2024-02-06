@@ -26,7 +26,7 @@ describe('TobiiClient Tests', () => {
   test('TobiiClient should receive test response from mock server', async () => {
     // Assuming TobiiClient has a method getTest() that fetches '/api/test'
     const client = new TobiiClient();
-    const response = await client.getTest();
+    const response = await client.ping();
     expect(response.message).toBe('This is a test response');
   });
 
