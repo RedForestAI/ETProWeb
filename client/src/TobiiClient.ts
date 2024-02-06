@@ -1,64 +1,111 @@
-// TobiiClient.ts
-class TobiiClient {
-    private static instance: TobiiClient = new TobiiClient();
-    private websocket: WebSocket | null = null;
-    private readonly wsUrl: string = 'ws://yourserver.com/path';
-  
-    private constructor() {
-      // Call connect with retry directly or let the user of this instance call it when they are ready
-      // this.connectWithRetry();
+import WebSocket from 'isomorphic-ws'
+import { waitForSocketState } from './utils'
+import { Message } from './Message'
+import jsLogger, { ILogger } from 'js-logger'
+
+// Create logger
+jsLogger.useDefaults()
+const cjsLogger: ILogger = jsLogger.get('chimerajs')
+
+export default class TobiiClient {
+  url: string
+  closeAfter: number
+  ws: WebSocket
+  reconnectInterval: number
+  messages: Array<Message>
+  shutdown: boolean
+
+  constructor(url: string, closeAfter: number = -1, reconnectInterval: number = 5000) {
+    this.url = url
+    this.closeAfter = closeAfter 
+    this.messages = []
+    this.shutdown = false
+    this.reconnectInterval = reconnectInterval
+    this.ws = this.connect()
+  }
+
+  connect() {
+    this.ws = new WebSocket(this.url);
+   
+    // Setting event handler methods
+    this.ws.onopen = (event: any) => {
+      cjsLogger.info("[ChimeraJS-TobiiClient]: Connection made to " + this.url) 
+      this.onopen(event)
     }
-  
-    // Method to establish the WebSocket connection with retry logic
-    public connectWithRetry(retryInterval: number = 5000, maxRetries: number = 5): Promise<void> {
-      console.log(`Attempting to connect to WebSocket at ${this.wsUrl}`);
-      return new Promise((resolve, reject) => {
-        const tryConnect = (retries: number = maxRetries) => {
-          this.websocket = new WebSocket(this.wsUrl);
-  
-          this.websocket.onopen = () => {
-            console.log("WebSocket connection established.");
-            resolve();
-          };
-  
-          this.websocket.onerror = (error) => {
-            console.log("WebSocket connection error:", error);
-          };
-  
-          this.websocket.onclose = () => {
-            if (retries > 0) {
-              console.log(`Connection failed, retrying in ${retryInterval / 1000} seconds...`);
-              setTimeout(() => tryConnect(retries - 1), retryInterval);
-            } else {
-              reject(new Error("Failed to connect to WebSocket after maximum retries."));
-            }
-          };
-          
-          this.websocket.onmessage = (event) => {
-            console.log(event.data);
-          };
-        };
-  
-        tryConnect();
-      });
-    }
-  
-    // Example method for sending data
-    public sendData(data: any): void {
-      if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
-        this.websocket.send(JSON.stringify(data));
-      } else {
-        console.log("WebSocket is not connected.");
+
+    this.ws.onmessage = (event: any) => {
+      const message: Message = JSON.parse(event.data)
+      cjsLogger.info("[ChimeraJS-TobiiClient]: Obtain msg: " + message.event) 
+      this.messages.push(message);
+
+      this.onmessage(message)
+      if (this.messages.length === this.closeAfter) {
+        this.shutdown = true
+        this.ws.close();
       }
     }
-  
-    // Static method to access the instance
-    public static getInstance(): TobiiClient {
-      return this.instance;
+
+    this.ws.onclose = (event: any) => {
+      this.onclose(event)
+      this.reconnect()
     }
+
+    this.ws.onerror = (event: any) => {
+      // Keep retrying to connect
+      // cjsLogger.debug("[ChimeraJS-TobiiClient]: ERROR detected")
+    }
+
+    return this.ws
   }
   
-  // Export the singleton instance directly
-  const TobiiClientInstance = TobiiClient.getInstance();
-  export default TobiiClientInstance;
+  //////////////////////////////////////////////////////////////////////
+  // User-defined methods 
+  //////////////////////////////////////////////////////////////////////
   
+  onopen(event: Event) {
+  }
+
+  onmessage(message: Message) {
+  }
+
+  onclose(event: CloseEvent) {
+  }
+
+  async waitConnect() {
+    while (true) {
+      const success = await waitForSocketState(this.ws, this.ws.OPEN);
+      if (success) {
+        break
+      }
+    }
+  }
+
+  // Send the content
+  send(content: Message) {
+    if (this.ws.readyState == this.ws.OPEN){
+      jsLogger.debug('[ChimeraJS-TobiiClient]: Sending msg: ' + content.event)
+      this.ws.send(JSON.stringify(content))
+    }
+  }
+
+  reconnect() {
+      setTimeout(() => {
+        if (!this.shutdown) {
+          cjsLogger.debug("[ChimeraJS-TobiiClient]: Reconnecting...")
+          this.connect() 
+        }
+      }, this.reconnectInterval)
+  }
+
+  async waitClose() {
+    await waitForSocketState(this.ws, this.ws.CLOSED)
+  }
+
+  async close() {
+    this.shutdown = true
+    if (this.ws.readyState == this.ws.OPEN){
+      this.ws.close()
+      await waitForSocketState(this.ws, this.ws.CLOSED)
+    }
+  }
+}
