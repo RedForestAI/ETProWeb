@@ -19,7 +19,11 @@ context = zmq.Context()
 def root():
     return {"Hello": "World"}
 
-@app.get("/find")
+@app.get("/api/ping")
+def ping():
+    return {"message": "PING"}
+
+@app.get("api/find")
 def find():
     eye_trackers: List[tr.EyeTracker] = tr.find_all_eyetrackers()
 
