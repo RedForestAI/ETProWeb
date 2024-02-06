@@ -98,4 +98,22 @@ describe('TobiiClient Tests', () => {
     expect(responseMessage!.type).toBe("GAZE_DATA");
   });
 
+  test("TobiiClient connect to Serial Number that doesn't exists", async () => {
+    const client = new TobiiClient();
+    const ws = await client.connectToEyeTracker("111111111");
+    let responseMessage: WSMessage | null = null;
+
+    ws.on("message", (data) => {
+      responseMessage = JSON.parse(data.toString());
+      tobiiLogger.log(responseMessage)
+
+      // Close the client after it receives the response
+      ws.close();
+    });
+
+    // Perform assertions on the response
+    await waitForSocketState(ws, ws.CLOSED);
+    expect(responseMessage).toBeNull();
+  });
+
 });

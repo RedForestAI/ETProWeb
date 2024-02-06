@@ -10,26 +10,27 @@ const tobiiLogger: ILogger = jsLogger.get('tobiiprosdk')
 export function startServer(port = 3000) {
   const app = express();
   const expressWs = require("express-ws")(app);
+
+  const eyetrackers: EyeTracker[] = [
+    {
+      address: "tobiipro://123456789",
+      model: "Tobii Pro Spark",
+      name: "Tobii Pro Spark",
+      serial_number: "123456789"
+    },
+    {
+      address: "tobiipro://987654321",
+      model: "Tobii Pro Spectrum",
+      name: "Tobii Pro Spectrum",
+      serial_number: "987654321"
+    }
+  ]
   
   app.get("/api/test", (req, res) => {
     res.json({ message: "This is a test response" });
   });
 
   app.get('/find', (req, res) => {
-    let eyetrackers: EyeTracker[] = [
-      {
-        address: "tobiipro://123456789",
-        model: "Tobii Pro Spark",
-        name: "Tobii Pro Spark",
-        serial_number: "123456789"
-      },
-      {
-        address: "tobiipro://987654321",
-        model: "Tobii Pro Spectrum",
-        name: "Tobii Pro Spectrum",
-        serial_number: "987654321"
-      }
-    ]
     res.json(eyetrackers);
   });
 
@@ -37,6 +38,10 @@ export function startServer(port = 3000) {
     // Keep sending data until the connection is closed, not dependent on client
     console.log(`WS connection opened - ${req.params.serial_number}`)
     
+    if (!eyetrackers.find(et => et.serial_number === req.params.serial_number)) {
+      ws.close();
+      return;
+    }
     const interval = setInterval(() => {
       console.log("Sending gaze data")
       const wsMessage: WSMessage = {
