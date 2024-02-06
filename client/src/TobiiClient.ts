@@ -1,6 +1,6 @@
-// APIClient.ts
+// TobiiClient.ts
 class TobiiClient {
-    private static instance: APIClient = new APIClient();
+    private static instance: TobiiClient = new TobiiClient();
     private websocket: WebSocket | null = null;
     private readonly wsUrl: string = 'ws://yourserver.com/path';
   
@@ -59,6 +59,6 @@ class TobiiClient {
   }
   
   // Export the singleton instance directly
-  const apiClientInstance = TobiiClient.getInstance();
-  export default apiClientInstance;
+  const TobiiClientInstance = TobiiClient.getInstance();
+  export default TobiiClientInstance;
   
