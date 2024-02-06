@@ -33,9 +33,12 @@ export function startServer(port = 3000) {
     res.json(eyetrackers);
   });
 
-  app.ws("/", function (ws, req) {
+  app.ws("/:serial_number", function (ws, req) {
     // Keep sending data until the connection is closed, not dependent on client
+    console.log(`WS connection opened - ${req.params.serial_number}`)
+    
     const interval = setInterval(() => {
+      console.log("Sending gaze data")
       const wsMessage: WSMessage = {
         type: "GAZE_DATA",
         status: "UPDATE",

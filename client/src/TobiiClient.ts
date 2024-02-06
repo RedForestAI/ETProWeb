@@ -27,15 +27,13 @@ export default class TobiiClient {
     return data;
   }
 
-  async connectToEyeTracker(serial_number: string, callback: (data: WSMessage) => void) {
+  async connectToEyeTracker(serial_number: string) {
     const ws: WebSocket = await this._createWebSocketConnection(serial_number);
-    ws.on("message", (data) => {
-      const responseMessage: WSMessage = JSON.parse(data.toString());
-      callback(responseMessage);
-    });
 
     // Record all active WS connections
     this._activeWSConnections[serial_number] = ws;
+
+    return ws;
   }
 
   async disconnectFromEyeTracker(serial_number: string) {
@@ -52,7 +50,7 @@ export default class TobiiClient {
     }
   }
 
-  async _createWebSocketConnection(url_params: string = "") {
+  async _createWebSocketConnection(url_params: string) {
     const ws: WebSocket = new WebSocket(`ws://localhost:${this.port}/${url_params}`);
     await waitForSocketState(ws, ws.OPEN);
     return ws;

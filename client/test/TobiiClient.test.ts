@@ -39,7 +39,7 @@ describe('TobiiClient Tests', () => {
 
   test("WS client receive GAZE_DATA updates from mock server", async () => {
     // Create test client
-    const client = new WebSocket(`ws://localhost:${port}`);
+    const client = new WebSocket(`ws://localhost:${port}/123456789`);
     await waitForSocketState(client, client.OPEN);
 
     // const testMessage = "This is a test message";
@@ -55,13 +55,14 @@ describe('TobiiClient Tests', () => {
 
     // Perform assertions on the response
     await waitForSocketState(client, client.CLOSED);
+    console.log(responseMessage)
     expect(responseMessage).not.toBeNull();
     expect(responseMessage!.type).toBe("GAZE_DATA");
   });
 
   test("TobiiClient should receive GAZE_DATA updates from mock server", async () => {
     const client = new TobiiClient();
-    const ws = await client._createWebSocketConnection();
+    const ws = await client._createWebSocketConnection("123456789");
     let responseMessage: WSMessage | null = null;
 
     ws.on("message", (data) => {
@@ -76,5 +77,25 @@ describe('TobiiClient Tests', () => {
     await waitForSocketState(ws, ws.CLOSED);
     expect(responseMessage).not.toBeNull();
     expect(responseMessage!.type).toBe("GAZE_DATA");
-  })
+  });
+
+  test("TobiiClient via nice API should receive GAZE_DATA updates from mock server", async () => {
+    const client = new TobiiClient();
+    const ws = await client.connectToEyeTracker("123456789");
+    let responseMessage: WSMessage | null = null;
+
+    ws.on("message", (data) => {
+      responseMessage = JSON.parse(data.toString());
+      tobiiLogger.log(responseMessage)
+
+      // Close the client after it receives the response
+      ws.close();
+    });
+
+    // Perform assertions on the response
+    await waitForSocketState(ws, ws.CLOSED);
+    expect(responseMessage).not.toBeNull();
+    expect(responseMessage!.type).toBe("GAZE_DATA");
+  });
+
 });
