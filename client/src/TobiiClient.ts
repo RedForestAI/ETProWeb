@@ -5,7 +5,7 @@ import jsLogger, { ILogger } from 'js-logger'
 
 // Create logger
 jsLogger.useDefaults()
-const cjsLogger: ILogger = jsLogger.get('chimerajs')
+const cjsLogger: ILogger = jsLogger.get('tobiiprosdk')
 
 export default class TobiiClient {
 
