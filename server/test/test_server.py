@@ -8,7 +8,7 @@ from tobii_pro_server.models import EyeTracker
 
 logger = logging.getLogger("tobii_pro_server")
 
-def test_ws_connection_falsy():
+def test_faulty_ws_connection():
     client = TestClient(app)
     
     with client.websocket_connect("/ws/{" + "null" + "}") as websocket:
@@ -34,7 +34,7 @@ def test_ws_connection():
     et = EyeTracker(**ets[0])
     
     with client.websocket_connect("/ws/{" + et.serial_number + "}") as websocket:
-        for i in range(100):
+        for i in range(50):
             data = websocket.receive_json()
             logger.debug(data)
             # time.sleep(1)

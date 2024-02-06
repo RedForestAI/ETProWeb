@@ -26,6 +26,23 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+def gaze_data_callback(websocket, gaze_data):
+    essential_data = {
+        "left": gaze_data["left_gaze_point_on_display_area"],
+        "right": gaze_data["right_gaze_point_on_display_area"]
+    }
+    asyncio.run(websocket.send_json(WSMessage(
+        type="GAZE",
+        status='UPDATE', 
+        value={"gaze_data": essential_data}
+    ).model_dump_json()))
+
+# def gaze_data_callback(gaze_data):
+#     # Print gaze points of left and right eye
+#     print("Left eye: ({gaze_left_eye}) \t Right eye: ({gaze_right_eye})".format(
+#         gaze_left_eye=gaze_data['left_gaze_point_on_display_area'],
+#         gaze_right_eye=gaze_data['right_gaze_point_on_display_area']))
+
 @app.get("/")
 def root():
     return {"Hello": "World"}
@@ -96,19 +113,8 @@ async def websocket_endpoint(websocket: WebSocket, serial_number: str):
         await websocket.close()
         return
     
-    def gaze_data_callback(websocket, gaze_data):
-        essential_data = {
-            "left": gaze_data["left_gaze_point_on_display_area"],
-            "right": gaze_data["right_gaze_point_on_display_area"]
-        }
-        asyncio.run(websocket.send_json(WSMessage(
-            type="GAZE",
-            status='UPDATE', 
-            value={"gaze_data": essential_data}
-        ).model_dump_json()))
-    
     # Subscribe to gaze data
-    logger.debug(f"Subscribing to gaze data from {eye_tracker.device_name} ({eye_tracker.serial_number})")
+    # logger.debug(f"Subscribing to gaze data from {eye_tracker.device_name} ({eye_tracker.serial_number})")
     eye_tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, lambda x: gaze_data_callback(websocket, x), as_dictionary=True)
 
     # Send an initial message to the WebSocket client
@@ -124,11 +130,12 @@ async def websocket_endpoint(websocket: WebSocket, serial_number: str):
             if msg.lower() == "close":
                 await websocket.close()
                 break
-                
+             
     except WebSocketDisconnect:
-        # Handle WebSocket disconnection here
-        logger.debug(f"Client disconnected")
-        try:
-            eye_tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, lambda x: gaze_data_callback(websocket, x))
-        except TypeError:
-            pass
+        pass   
+    except Exception as e:
+        logger.error(f"Error: {e}")
+
+    # Handle WebSocket disconnection here
+    eye_tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA)
+    # logger.debug(f"Client disconnected")
