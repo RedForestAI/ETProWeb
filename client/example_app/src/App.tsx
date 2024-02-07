@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TobiiClient } from "tobiiprosdk-js"
-import { waitForSocketState } from './utils'
 import './App.css'
 
 export type EyeTracker = {
@@ -12,11 +11,34 @@ export type EyeTracker = {
 
 const client = new TobiiClient()
 
+function GazeDot(props: {x: number, y: number}){
+  
+  const style: React.CSSProperties = {
+    position: 'fixed',
+    zIndex: 99999,
+    left: '-5px',
+    top: '-5px',
+    background: 'red',
+    borderRadius: '50%',
+    opacity: 0.7,
+    width: 20,
+    height: 20,
+    transform: `translate(${props.x.toFixed(2)}px, ${props.y.toFixed(2)}px)`,
+  };
+
+  useEffect(() => {
+    console.log("GazeDot", props.x, props.y)
+  }, [props.x, props.y])
+
+  return <div id="GazeDot" style={style}></div>;
+};
+
 function App() {
   const [connected, setConnected] = useState<boolean>(false);
   const [running, setRunning] = useState<boolean>(false);
   const [ets, setETS] = useState<EyeTracker[]>([]);
   const [etWs, setETWs] = useState<WebSocket | null>(null);
+  const [gaze, setGaze] = useState<{x: number, y: number}>({x: 0, y: 0})
 
   useEffect(() => {
     async function pingServer() {
@@ -41,13 +63,18 @@ function App() {
 
     const ws = await client.connectToEyeTracker(ets[0].serial_number);
     setETWs(ws)
-    // const ws: WebSocket = new WebSocket("ws://localhost:9999/ws")
-    // await waitForSocketState(ws, ws.OPEN)
-    ws.send("Hello, world!")
 
     // Correct way to set event listeners on WebSocket
     ws.onmessage = (event: any) => {
-      console.log(event.data);
+      let event_data = JSON.parse(event.data)
+      let gaze = JSON.parse(event_data).value.gaze_data.left
+      // console.log(gaze)
+
+      // Convert the relative gaze position to absolute position
+      let x = window.innerWidth * gaze[0]
+      let y = window.innerHeight * gaze[1]
+
+      setGaze({x: x, y: y})
     };
 
     ws.onerror = (event: any) => {
@@ -77,6 +104,9 @@ function App() {
 
   return (
     <>
+      {running &&
+        <GazeDot {...gaze}/>
+      }
       <div className="flex flex-col gap-4">
         <p className={`${connected ? "text-green-500" : "text-red-500"}`}>{`Status: ${connected ? "SUCCESS" : "FAILURE"}`}</p>
 
