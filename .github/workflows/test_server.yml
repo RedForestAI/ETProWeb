@@ -18,6 +18,9 @@ jobs:
   test:
     timeout-minutes: 10
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ./server
 
     strategy:
       fail-fast: false

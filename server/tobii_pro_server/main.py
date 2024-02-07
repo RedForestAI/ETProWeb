@@ -1,9 +1,6 @@
 from typing import List, Optional
 import logging
 import asyncio
-import os
-import threading
-import zmq
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware

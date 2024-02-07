@@ -3,7 +3,7 @@ from . import __logger
 from . import __loop
 
 __logger.setup()
-__loop.setup()
+# __loop.setup()
 
 from .main import app
 
