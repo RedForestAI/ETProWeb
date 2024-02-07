@@ -1,0 +1,52 @@
+name: Test
+
+# Look at this: https://github.com/iterative/dvc/pull/7213
+# Forum: https://discuss.dvc.org/t/cml-github-actions-google-drive-service-account/795/3?fbclid=IwAR21DBJ3bP2m3VwZ7EUp4U1ik0YQbNRgAIdemg14msCC7UtnaBao81oTTDE
+# https://github.com/iterative/cml#using-cml-with-dvc
+# https://github.com/iterative/dvc.org/blob/master/content/docs/user-guide/setup-google-drive-remote.md
+# https://www.ravirajag.dev/blog/mlops-github-actions
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    timeout-minutes: 10
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    # The process
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        id: cp39
+        with:
+          python-version: 3.9
+
+      - uses: actions/checkout@v2
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          ${{ steps.cp39.outputs.python-path }} -m pip install --upgrade pip
+          ${{ steps.cp39.outputs.python-path }} -m pip install '.[test]'
+
+      - name: Install Windows dependencies
+        if: matrix.os == 'windows-latest'
+        run: |
+          ${{ steps.cp39.outputs.python-path }} -m pip install --upgrade pip
+          ${{ steps.cp39.outputs.python-path }} -m pip install .[test]
+
+      - name: Perform faster tests
+        run: |
+          ${{ steps.cp39.outputs.python-path }} -m pytest -v --color yes -m test
