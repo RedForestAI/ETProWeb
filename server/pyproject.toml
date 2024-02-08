@@ -20,6 +20,7 @@ dependencies = [
     "fastapi",
     "pydantic",
     "uvicorn[standard]",
+    "cryptography",
     'winloop; sys_platform == "win32"',
     'uvloop; sys_platform != "win32"',
 ]

@@ -1,30 +1,27 @@
-# React + TypeScript + Vite
+# Example Application using Vite+TS+React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+For running the application first connect the Tobii Pro SDK device and start the FastAPI server. Then install the dependencies of the front-end application with the following command:
 
-Currently, two official plugins are available:
+```term
+npm install
+``
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Then run the application:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```term
+npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## HTTP vs HTTPS
+
+For testing the front and backend for production readiness, both sides of communicate should be the same. The backend can be altered in SSL context by which entrypoint (EXE, CLI, or Python command) is used. For the front-end, HTTPS is default. To change to HTTP, modifiy the ``vite.config.ts`` to remove the HTTPS configuration, like this:
+
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+```

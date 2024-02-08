@@ -9,7 +9,7 @@ export type EyeTracker = {
   serial_number: string;
 }
 
-const client = new TobiiClient()
+const client = new TobiiClient(9999, 'https://localhost', 'wss://localhost')
 
 function GazeDot(props: {x: number, y: number}){
   
