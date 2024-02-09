@@ -2,9 +2,11 @@ import uvicorn
 import tobii_pro_server
 import pathlib
 
-CURRENT_DIR = pathlib.Path(__file__).parent
-cert_file = CURRENT_DIR / "cert.pem"
-key_file = CURRENT_DIR / "key.pem"
+# CURRENT_DIR = pathlib.Path(__file__).parent
+CWD = pathlib.Path.cwd()
+print(CWD)
+cert_file = CWD / "cert.pem"
+key_file = CWD / "key.pem"
 assert cert_file.exists()
 assert key_file.exists()
 
