@@ -1,4 +1,4 @@
-# TobiiProWeb
+# ETProWeb
 Server and JS client for streaming real-time eye-tracking data from Tobii Pro SDK devices to the browser.
 
 This is a monorepo, consisting of a ``server`` in Python FastAPI and a ``client`` in TS.
