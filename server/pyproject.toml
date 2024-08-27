@@ -1,7 +1,7 @@
 [project]
-name = "tobii_pro_server"
+name = "et_pro_server"
 version = "0.0.1"
-description = "Tobii Pro Server: An HTTP/WS Server to control Tobii Pro Eye-Trackers"
+description = "ET Pro Server: An HTTP/WS Server to control Tobii Pro Eye-Trackers"
 authors = [
     {name = "Eduardo Davalos", email="eduardo.davalos.anaya@vanderbilt.edu"},
 ]

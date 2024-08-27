@@ -3,8 +3,8 @@ import tobii_research as tr
 import logging
 from fastapi.testclient import TestClient
 
-from tobii_pro_server import app
-from tobii_pro_server.models import EyeTracker
+from et_pro_server import app
+from et_pro_server.models import EyeTracker
 
 logger = logging.getLogger("tobii_pro_server")
 

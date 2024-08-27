@@ -1,5 +1,5 @@
 {
-  "name": "tobiiprosdk-js",
+  "name": "etsdk-js",
   "version": "0.0.1",
   "description": "Client-side to Tobii Pro SDK",
   "main": "./dist/index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "TobiiProServer"
+    "url": "ETProServer"
   },
   "keywords": [
     "eye-tracking",

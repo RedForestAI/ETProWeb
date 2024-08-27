@@ -12,11 +12,11 @@ You can use the provided ``.exe`` for Windows to run the server, or you can inst
 pip install -e .
 ```
 
-Then you can use the ``tobii_pro_server`` CLI to start and configure the server:
+Then you can use the ``et_pro_server`` CLI to start and configure the server:
 
 ```term
-$ tobii_pro_server --help
-usage: tobii_pro_server [-h] [--host HOST] [--port PORT] [--reload RELOAD] [--log_level LOG_LEVEL] [--workers WORKERS]
+$ et_pro_server --help
+usage: et_pro_server [-h] [--host HOST] [--port PORT] [--reload RELOAD] [--log_level LOG_LEVEL] [--workers WORKERS]
 
 options:
   -h, --help            show this help message and exit
@@ -30,10 +30,10 @@ options:
 
 ## Client
 
-The client library, located in the ``client`` folder, is called ``tobiiprosdk-js``. It can be installed with the following:
+The client library, located in the ``client`` folder, is called ``etprosdk-js``. It can be installed with the following:
 
 ```term
-npm install tobiiprosdk-js
+npm install etprosdk-js
 ```
 
 There is an example Vite+React+TS application within the ``example_app`` folder. To access the eye-tracker, make sure to run the server and connect the eye-tracker first. To run, use the following command:
@@ -47,7 +47,7 @@ npm run dev
 For the client-side API, here are some examples: 
 
 ```ts
-import { TobiiClient } from "tobiiprosdk-js"
+import { TobiiClient } from "etprosdk-js"
 
 const client = new TobiiClient()
 

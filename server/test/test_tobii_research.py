@@ -5,8 +5,8 @@ import json
 from pydantic.tools import parse_obj_as
 from fastapi.testclient import TestClient
 
-from tobii_pro_server import app
-from tobii_pro_server.models import WSMessage
+from et_pro_server import app
+from et_pro_server.models import WSMessage
 
 logger = logging.getLogger("tobii_pro_server")
 
