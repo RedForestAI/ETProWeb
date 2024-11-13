@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "etsdk-js": "file:..",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "etprosdk-js": "file:.."
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

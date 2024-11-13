@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { TobiiClient } from "etprosdk-js"
+import { TobiiClient } from "etsdk-js"
 import './App.css'
 
 export type EyeTracker = {
