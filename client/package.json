@@ -1,6 +1,6 @@
 {
   "name": "etsdk-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Client-side to Tobii Pro SDK",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
